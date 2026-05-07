@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Energy Refilling Station — Bangladesh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep: #030912;
+  --bg-card: rgba(8, 20, 40, 0.85);
+  --bg-glass: rgba(0, 180, 255, 0.04);
+  --green: #00e87a;
+  --green-dim: rgba(0, 232, 122, 0.15);
+  --green-glow: 0 0 20px rgba(0, 232, 122, 0.4), 0 0 60px rgba(0, 232, 122, 0.15);
+  --blue: #00aaff;
+  --blue-dim: rgba(0, 170, 255, 0.15);
+  --blue-glow: 0 0 20px rgba(0, 170, 255, 0.4), 0 0 60px rgba(0, 170, 255, 0.15);
+  --yellow: #ffaa00;
+  --yellow-dim: rgba(255, 170, 0, 0.15);
+  --yellow-glow: 0 0 20px rgba(255, 170, 0, 0.4), 0 0 60px rgba(255, 170, 0, 0.15);
+  --red: #ff2244;
+  --red-dim: rgba(255, 34, 68, 0.15);
+  --red-glow: 0 0 20px rgba(255, 34, 68, 0.4), 0 0 60px rgba(255, 34, 68, 0.15);
+  --purple: #8855ff;
+  --border: rgba(0, 180, 255, 0.12);
+  --border-bright: rgba(0, 180, 255, 0.3);
+  --text: #d0e8ff;
+  --text-dim: rgba(180, 210, 255, 0.5);
+  --nav-h: 70px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 120, 255, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0, 232, 122, 0.04) 0%, transparent 60%),
+    linear-gradient(180deg, #030912 0%, #040d1e 50%, #030912 100%);
+  background-attachment: fixed;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+
+/* === TOP NAVIGATION === */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); z-index: 1000;
+  background: rgba(3, 9, 18, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700;
+  color: #fff; white-space: nowrap;
+}
+
+.nav-logo-icon {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; position: relative;
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
+  flex-shrink: 0;
+}
+
+.nav-logo-icon::after {
+  content: '⚡';
+  position: absolute;
+}
+
+.nav-logo-text { line-height: 1.1; }
+.nav-logo-text span { display: block; font-size: 9px; font-weight: 400; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
+
+.nav-tabs {
+  display: flex; gap: 4px; list-style: none;
+}
+
+.nav-tabs li a {
+  display: block; padding: 8px 16px; border-radius: 6px;
+  font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
+  text-decoration: none; color: var(--text-dim); letter-spacing: 0.5px;
+  transition: all 0.25s; cursor: pointer; border: 1px solid transparent;
+  text-transform: uppercase;
+}
+
+.nav-tabs li a:hover, .nav-tabs li a.active {
+  color: var(--blue); background: var(--blue-dim);
+  border-color: rgba(0, 170, 255, 0.2);
+}
+
+.nav-right {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.dev-credit {
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  color: var(--text-dim); letter-spacing: 1px;
+  border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px;
+}
+
+.dev-credit span { color: var(--green); }
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+  box-shadow: var(--green-glow); animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* === SECTIONS === */
+main { padding-top: var(--nav-h); }
+
+section {
+  padding: 60px 2rem;
+  max-width: 1400px; margin: 0 auto;
+}
+
+.section-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 36px;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 700;
+  color: #fff; letter-spacing: 1px;
+}
+
+.section-badge {
+  padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.badge-live { background: rgba(0, 232, 122, 0.15); color: var(--green); border: 1px solid rgba(0, 232, 122, 0.3); }
+.badge-ai { background: rgba(136, 85, 255, 0.15); color: #aa88ff; border: 1px solid rgba(136, 85, 255, 0.3); }
+.badge-smart { background: rgba(0, 170, 255, 0.15); color: var(--blue); border: 1px solid rgba(0, 170, 255, 0.25); }
+
+.section-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border-bright), transparent);
+}
+
+/* === GLASS CARD === */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  position: relative; overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 180, 255, 0.3), transparent);
+}
+
+/* === HERO METRICS === */
+#live-status { padding-top: 80px; }
+
+.hero-title {
+  text-align: center; margin-bottom: 50px;
+}
+
+.hero-title h1 {
+  font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, var(--blue) 50%, var(--green) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 8px;
+}
+
+.hero-title p {
+  color: var(--text-dim); font-size: 14px; letter-spacing: 3px;
+  text-transform: uppercase; font-family: 'Share Tech Mono', monospace;
+}
+
+.metrics-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px;
+}
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative; overflow: hidden;
+  transition: transform 0.3s, border-color 0.3s;
+  cursor: default;
+}
+
+.metric-card:hover { transform: translateY(-4px); }
+
+.metric-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  border-radius: 0 0 16px 16px;
+}
+
+.metric-card.green { border-color: rgba(0, 232, 122, 0.25); }
+.metric-card.green::after { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.metric-card.green .metric-value { color: var(--green); text-shadow: 0 0 20px rgba(0, 232, 122, 0.5); }
+
+.metric-card.blue { border-color: rgba(0, 170, 255, 0.25); }
+.metric-card.blue::after { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+.metric-card.blue .metric-value { color: var(--blue); text-shadow: 0 0 20px rgba(0, 170, 255, 0.5); }
+
+.metric-card.yellow { border-color: rgba(255, 170, 0, 0.25); }
+.metric-card.yellow::after { background: linear-gradient(90deg, transparent, var(--yellow), transparent); }
+.metric-card.yellow .metric-value { color: var(--yellow); text-shadow: 0 0 20px rgba(255, 170, 0, 0.5); }
+
+.metric-card.purple { border-color: rgba(136, 85, 255, 0.25); }
+.metric-card.purple::after { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+.metric-card.purple .metric-value { color: #aa88ff; text-shadow: 0 0 20px rgba(136, 85, 255, 0.5); }
+
+.metric-icon {
+  font-size: 28px; margin-bottom: 12px; display: block;
+}
+
+.metric-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 8px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.metric-value {
+  font-family: 'Orbitron', sans-serif; font-size: 34px; font-weight: 800;
+  line-height: 1; margin-bottom: 8px;
+}
+
+.metric-sub {
+  font-size: 12px; color: var(--text-dim);
+}
+
+.metric-bar {
+  width: 100%; height: 4px; background: rgba(255,255,255,0.05);
+  border-radius: 2px; margin-top: 12px; overflow: hidden;
+}
+
+.metric-bar-fill {
+  height: 100%; border-radius: 2px;
+  animation: barFill 1.5s ease-out forwards;
+}
+
+@keyframes barFill {
+  from { width: 0; }
+}
+
+.metric-card.green .metric-bar-fill { background: linear-gradient(90deg, var(--green), #00ff99); }
+.metric-card.blue .metric-bar-fill { background: linear-gradient(90deg, var(--blue), #55ccff); }
+.metric-card.yellow .metric-bar-fill { background: linear-gradient(90deg, var(--yellow), #ffcc44); }
+.metric-card.purple .metric-bar-fill { background: linear-gradient(90deg, var(--purple), #aa88ff); }
+
+/* Secondary metrics row */
+.secondary-metrics {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+}
+
+.sec-metric {
+  background: rgba(8, 20, 40, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 12px; text-align: center;
+}
+
+.sec-metric-val {
+  font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.sec-metric-lbl {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-dim); font-family: 'Share Tech Mono', monospace;
+}
+
+/* === QUEUE PANEL === */
+.queue-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+}
+
+.lane-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
+  position: relative; overflow: hidden;
+}
+
+.lane-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+}
+
+.lane-title {
+  font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.lane-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; letter-spacing: 1px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.lane-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.lane-queue {
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; min-height: 120px;
+}
+
+.queue-vehicle {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.03); border-radius: 8px;
+  padding: 8px 10px; border: 1px solid rgba(255,255,255,0.05);
+  animation: slideIn 0.4s ease-out;
+  font-size: 13px;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.vehicle-icon { font-size: 18px; }
+.vehicle-info { flex: 1; }
+.vehicle-id { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); }
+.vehicle-status { font-size: 12px; font-weight: 600; }
+
+.queue-timer {
+  text-align: center; padding: 12px;
+  background: rgba(255,255,255,0.03); border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.timer-val {
+  font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 700;
+}
+
+.timer-lbl {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--text-dim); font-family: 'Share Tech Mono', monospace;
+}
+
+/* Lane colors */
+.lane-green { border-color: rgba(0, 232, 122, 0.2); }
+.lane-green .lane-title { color: var(--green); }
+.lane-green .lane-dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.lane-green .timer-val { color: var(--green); }
+
+.lane-blue { border-color: rgba(0, 170, 255, 0.2); }
+.lane-blue .lane-title { color: var(--blue); }
+.lane-blue .lane-dot { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+.lane-blue .timer-val { color: var(--blue); }
+
+.lane-yellow { border-color: rgba(255, 170, 0, 0.2); }
+.lane-yellow .lane-title { color: var(--yellow); }
+.lane-yellow .lane-dot { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+.lane-yellow .timer-val { color: var(--yellow); }
+
+.lane-red { border-color: rgba(255, 34, 68, 0.2); }
+.lane-red .lane-title { color: var(--red); }
+.lane-red .lane-dot { background: var(--red); box-shadow: 0 0 8px var(--red); }
+.lane-red .timer-val { color: var(--red); }
+
+/* AI Prediction bar */
+.ai-prediction {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(136, 85, 255, 0.08);
+  border: 1px solid rgba(136, 85, 255, 0.2);
+  border-radius: 12px; padding: 14px 20px; margin-top: 24px;
+}
+
+.ai-icon { font-size: 20px; }
+.ai-text { font-size: 13px; }
+.ai-text strong { color: #aa88ff; font-family: 'Orbitron', sans-serif; font-size: 11px; }
+
+/* === BOOKING SECTION === */
+#book-slot { background: rgba(0, 0, 0, 0.2); }
+
+.booking-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+}
+
+.form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+}
+
+.form-title {
+  font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700;
+  color: #fff; margin-bottom: 24px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.form-group { margin-bottom: 18px; }
+
+.form-label {
+  display: block; font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace; margin-bottom: 8px;
+}
+
+.form-select, .form-input {
+  width: 100%; padding: 12px 16px;
+  background: rgba(0, 20, 50, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 500;
+  outline: none; cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  -webkit-appearance: none;
+}
+
+.form-select:focus, .form-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.1);
+}
+
+.form-select option { background: #0a1830; }
+
+.time-slots {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+}
+
+.time-slot {
+  padding: 8px 4px; text-align: center;
+  background: rgba(0, 20, 50, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 8px; cursor: pointer;
+  font-size: 12px; font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s; color: var(--text-dim);
+  user-select: none;
+}
+
+.time-slot:hover { border-color: var(--blue); color: var(--blue); }
+.time-slot.selected { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.time-slot.booked { border-color: rgba(255,34,68,0.3); color: var(--red); cursor: not-allowed; opacity: 0.5; }
+
+.btn-book {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, rgba(0, 170, 255, 0.2), rgba(0, 232, 122, 0.15));
+  border: 1px solid rgba(0, 170, 255, 0.4);
+  border-radius: 10px; color: #fff;
+  font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 1px; cursor: pointer;
+  transition: all 0.3s; margin-top: 20px;
+  text-transform: uppercase;
+}
+
+.btn-book:hover {
+  background: linear-gradient(135deg, rgba(0, 170, 255, 0.35), rgba(0, 232, 122, 0.25));
+  box-shadow: 0 0 30px rgba(0, 170, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* QR / Confirmation */
+.confirmation-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(0, 232, 122, 0.3);
+  border-radius: 16px; padding: 28px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; gap: 16px;
+}
+
+.qr-canvas {
+  width: 140px; height: 140px; border-radius: 12px;
+  border: 2px solid var(--green);
+  box-shadow: 0 0 30px rgba(0, 232, 122, 0.3);
+  background: #fff; padding: 8px;
+}
+
+.token-display {
+  font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 900;
+  color: var(--green); text-shadow: 0 0 20px rgba(0, 232, 122, 0.6);
+}
+
+.token-label {
+  font-size: 11px; letter-spacing: 2px; color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.assigned-lane {
+  padding: 8px 20px; border-radius: 8px;
+  font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700;
+}
+
+.idle-placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; height: 100%; min-height: 300px; color: var(--text-dim);
+}
+
+.idle-icon { font-size: 48px; opacity: 0.3; }
+
+/* === RFID SECTION === */
+.rfid-layout {
+  display: grid; grid-template-columns: 380px 1fr; gap: 24px;
+}
+
+.fuel-card-wrapper {
+  perspective: 1000px;
+}
+
+.fuel-card {
+  width: 100%; aspect-ratio: 1.586;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0a1628 0%, #0f2044 40%, #0a1628 100%);
+  border: 1px solid rgba(0, 170, 255, 0.3);
+  padding: 24px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 170, 255, 0.1);
+  transition: transform 0.6s; transform-style: preserve-3d;
+}
+
+.fuel-card:hover { transform: rotateY(-8deg) rotateX(4deg); }
+
+.fuel-card::before {
+  content: '';
+  position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(0, 232, 122, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.fuel-card::after {
+  content: '';
+  position: absolute; bottom: -30%; left: -10%; width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(0, 170, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.card-logo {
+  font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+  color: var(--green); letter-spacing: 2px; margin-bottom: 20px;
+}
+
+.card-chip {
+  width: 44px; height: 32px; background: linear-gradient(135deg, #c8a84b, #e8c86e, #c8a84b);
+  border-radius: 6px; margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+
+.card-chip::before {
+  content: '';
+  position: absolute; inset: 6px;
+  background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(255,255,255,0.1));
+  border-radius: 4px; border: 1px solid rgba(200, 168, 75, 0.5);
+}
+
+.card-number {
+  font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.8); margin-bottom: 16px; position: relative; z-index: 1;
+}
+
+.card-bottom {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  position: relative; z-index: 1;
+}
+
+.card-name { font-size: 13px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.9); }
+.card-expiry { font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; }
+.card-rfid { font-size: 24px; color: rgba(0, 170, 255, 0.6); }
+
+.card-balance-badge {
+  position: absolute; top: 20px; right: 20px;
+  font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 700;
+  color: var(--green); z-index: 1;
+}
+
+.rfid-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  height: 100%;
+}
+
+.rfid-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px;
+}
+
+.rfid-stat-val {
+  font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.rfid-stat-lbl {
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-dim); font-family: 'Share Tech Mono', monospace; margin-bottom: 12px;
+}
+
+.progress-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+
+.progress-bar-thin {
+  width: 100%; height: 6px; background: rgba(255,255,255,0.06);
+  border-radius: 3px; overflow: hidden; margin-top: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%; border-radius: 3px;
+  animation: barFill 1.5s 0.5s ease-out both;
+}
+
+/* === ENERGY ANALYTICS === */
+.energy-layout {
+  display: grid; grid-template-columns: 2fr 1fr; gap: 24px;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px;
+}
+
+.chart-title {
+  font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.8); margin-bottom: 16px; letter-spacing: 0.5px;
+}
+
+.energy-sidebar {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.energy-stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+
+.energy-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ai-rec-card {
+  background: rgba(136, 85, 255, 0.08);
+  border: 1px solid rgba(136, 85, 255, 0.2);
+  border-radius: 12px; padding: 16px;
+}
+
+.ai-rec-title {
+  font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+  color: #aa88ff; margin-bottom: 12px; letter-spacing: 1px;
+}
+
+.ai-rec-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid rgba(136, 85, 255, 0.1);
+  font-size: 12px; color: var(--text);
+}
+
+.ai-rec-item:last-child { border-bottom: none; }
+.ai-bullet { color: #aa88ff; font-family: 'Share Tech Mono'; }
+
+/* Bottom energy row */
+.energy-bottom {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;
+}
+
+.energy-bottom-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+
+.peak-bars {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 60px; margin-top: 12px;
+}
+
+.peak-bar {
+  flex: 1; border-radius: 4px 4px 0 0;
+  animation: growBar 1s ease-out forwards; transform-origin: bottom;
+}
+
+@keyframes growBar {
+  from { height: 0; }
+}
+
+/* === SAFETY SECTION === */
+.safety-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
+}
+
+.safety-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.safety-status {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.safety-indicator {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+
+.cctv-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+
+.cctv-feed {
+  background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border);
+  border-radius: 10px; aspect-ratio: 16/10; overflow: hidden;
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+
+.cctv-scan {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: rgba(0, 232, 122, 0.5);
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  from { top: 0; }
+  to { top: 100%; }
+}
+
+.cctv-overlay {
+  position: absolute; top: 6px; left: 6px; right: 6px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.cctv-label {
+  font-family: 'Share Tech Mono', monospace; font-size: 9px;
+  color: var(--green); background: rgba(0,0,0,0.5); padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.cctv-rec {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+  box-shadow: 0 0 6px var(--red); animation: pulse 1s infinite;
+}
+
+.cctv-content {
+  font-size: 28px; opacity: 0.15;
+  position: relative; z-index: 1;
+}
+
+/* === FOOTER === */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 2rem 24px;
+  max-width: 1400px; margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 32px;
+}
+
+.footer-brand p {
+  font-size: 13px; color: var(--text-dim); margin-top: 12px; line-height: 1.7;
+}
+
+.footer-col-title {
+  font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+  color: rgba(255,255,255,0.6); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.footer-links li a { color: var(--text-dim); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+.footer-links li a:hover { color: var(--blue); }
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.footer-copy { font-size: 12px; color: var(--text-dim); }
+
+.footer-dev {
+  font-family: 'Share Tech Mono', monospace; font-size: 12px;
+  color: var(--text-dim); letter-spacing: 1px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.footer-dev .dev-tag {
+  background: rgba(0, 232, 122, 0.1); border: 1px solid rgba(0, 232, 122, 0.25);
+  padding: 4px 12px; border-radius: 4px; color: var(--green);
+  font-size: 11px;
+}
+
+/* === DIVIDER LINES === */
+.section-divider {
+  height: 1px; max-width: 1400px; margin: 0 auto;
+  background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+}
+
+/* === ANIMATED BACKGROUND GRID === */
+.bg-grid {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.025;
+  background-image:
+    linear-gradient(rgba(0, 170, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 170, 255, 0.5) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* === LIVE TICKER === */
+.live-ticker {
+  background: rgba(0, 20, 50, 0.5); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 20px;
+  display: flex; align-items: center; gap: 12px;
+  overflow: hidden; margin-bottom: 32px; white-space: nowrap;
+}
+
+.ticker-label {
+  font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 700;
+  color: var(--green); letter-spacing: 2px; flex-shrink: 0;
+  padding-right: 12px; border-right: 1px solid var(--border);
+}
+
+.ticker-inner {
+  display: inline-flex; gap: 40px;
+  animation: ticker 30s linear infinite;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.ticker-item { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); }
+.ticker-item span { margin: 0 4px; }
+
+/* === RESPONSIVE === */
+@media (max-width: 1100px) {
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .queue-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .rfid-layout { grid-template-columns: 1fr; }
+  .energy-layout { grid-template-columns: 1fr; }
+  .secondary-metrics { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .nav-tabs { display: none; }
+  .metrics-grid { grid-template-columns: 1fr 1fr; }
+  .queue-grid { grid-template-columns: 1fr; }
+  .booking-layout { grid-template-columns: 1fr; }
+  .safety-grid { grid-template-columns: 1fr; }
+  .cctv-grid { grid-template-columns: repeat(2, 1fr); }
+  .energy-bottom { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .secondary-metrics { grid-template-columns: repeat(2, 1fr); }
+  .hero-title h1 { font-size: 22px; }
+}
+
+/* === GLITCH ANIMATION === */
+@keyframes glitch {
+  0%, 90%, 100% { clip-path: inset(0 0 100% 0); }
+  10% { clip-path: inset(20% 0 60% 0); transform: translateX(-3px); }
+  20% { clip-path: inset(50% 0 30% 0); transform: translateX(3px); }
+  30% { clip-path: inset(80% 0 5% 0); transform: translateX(-2px); }
+}
+
+/* Floating particles */
+.particle {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  animation: float linear infinite;
+}
+
+@keyframes float {
+  from { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.3; }
+  to { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* Number counter animation */
+.counter { display: inline-block; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<!-- FLOATING PARTICLES -->
+<div id="particles"></div>
+
+<!-- TOP NAVIGATION -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon"></div>
+    <div class="nav-logo-text">
+      SMART ENERGY REFILLING
+      <span>Intelligent Infrastructure · Bangladesh</span>
+    </div>
+  </div>
+
+  <ul class="nav-tabs">
+    <li><a href="#live-status" class="active">Live Status</a></li>
+    <li><a href="#book-slot">Book Slot</a></li>
+    <li><a href="#energy">Energy Analytics</a></li>
+    <li><a href="#rfid">Fuel Card</a></li>
+    <li><a href="#safety">Admin Dashboard</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div class="dev-credit">Dev: <span>Shah MD Mustafizur Rahman</span></div>
+    <div class="status-dot" title="All Systems Online"></div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+
+<!-- LIVE TICKER -->
+<div style="padding: 12px 2rem 0; max-width: 1400px; margin: var(--nav-h) auto 0;">
+  <div class="live-ticker">
+    <div class="ticker-label">◉ LIVE FEED</div>
+    <div style="overflow: hidden; flex: 1;">
+      <div class="ticker-inner" id="ticker">
+        <span class="ticker-item">🌞 Solar Output: <span style="color:var(--green)">72.4 kW</span></span>
+        <span class="ticker-item">⚡ EV Queue Wait: <span style="color:var(--yellow)">~4 min</span></span>
+        <span class="ticker-item">🔋 Battery: <span style="color:var(--blue)">88%</span></span>
+        <span class="ticker-item">🚗 Active Pumps: <span style="color:var(--blue)">3/4</span></span>
+        <span class="ticker-item">🌡️ Grid Load: <span style="color:var(--red)">34%</span></span>
+        <span class="ticker-item">📡 RFID Transactions Today: <span style="color:var(--green)">247</span></span>
+        <span class="ticker-item">🚦 AI Lane Balance: <span style="color:#aa88ff">Optimal</span></span>
+        <span class="ticker-item">🌞 Solar Output: <span style="color:var(--green)">72.4 kW</span></span>
+        <span class="ticker-item">⚡ EV Queue Wait: <span style="color:var(--yellow)">~4 min</span></span>
+        <span class="ticker-item">🔋 Battery: <span style="color:var(--blue)">88%</span></span>
+        <span class="ticker-item">🚗 Active Pumps: <span style="color:var(--blue)">3/4</span></span>
+        <span class="ticker-item">🌡️ Grid Load: <span style="color:var(--red)">34%</span></span>
+        <span class="ticker-item">📡 RFID Transactions Today: <span style="color:var(--green)">247</span></span>
+        <span class="ticker-item">🚦 AI Lane Balance: <span style="color:#aa88ff">Optimal</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HERO DASHBOARD ===== -->
+<section id="live-status" style="padding-top: 20px;">
+  <div class="hero-title">
+    <h1>Intelligent Energy Hub Dashboard</h1>
+    <p>স্মার্ট এনার্জি রিফিলিং স্টেশন · Dhaka, Bangladesh · Real-time Infrastructure Monitor</p>
+  </div>
+
+  <!-- PRIMARY METRICS -->
+  <div class="metrics-grid">
+    <div class="metric-card blue">
+      <span class="metric-icon">⛽</span>
+      <div class="metric-label">Fuel Pumps Active</div>
+      <div class="metric-value">3<span style="font-size:20px;opacity:0.4">/4</span></div>
+      <div class="metric-sub">Pump 2 — Maintenance Mode</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:75%"></div></div>
+    </div>
+    <div class="metric-card yellow">
+      <span class="metric-icon">🔌</span>
+      <div class="metric-label">EV Chargers Available</div>
+      <div class="metric-value">2<span style="font-size:20px;opacity:0.4">/6</span></div>
+      <div class="metric-sub">4 Ports Occupied · Fast-DC Active</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:33%"></div></div>
+    </div>
+    <div class="metric-card green">
+      <span class="metric-icon">☀️</span>
+      <div class="metric-label">Solar Generation</div>
+      <div class="metric-value">72<span style="font-size:20px">%</span></div>
+      <div class="metric-sub">89.4 kW · 312 Panels Online</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:72%"></div></div>
+    </div>
+    <div class="metric-card purple">
+      <span class="metric-icon">🔋</span>
+      <div class="metric-label">Battery Backup</div>
+      <div class="metric-value">88<span style="font-size:20px">%</span></div>
+      <div class="metric-sub">Estimated 6.4h Autonomy</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="width:88%"></div></div>
+    </div>
+  </div>
+
+  <!-- SECONDARY METRICS -->
+  <div class="secondary-metrics">
+    <div class="sec-metric">
+      <div class="sec-metric-val" style="color:var(--green)">247</div>
+      <div class="sec-metric-lbl">Vehicles Today</div>
+    </div>
+    <div class="sec-metric">
+      <div class="sec-metric-val" style="color:var(--blue)">BDT 1.24L</div>
+      <div class="sec-metric-lbl">Today's Revenue</div>
+    </div>
+    <div class="sec-metric">
+      <div class="sec-metric-val" style="color:var(--yellow)">4.2 min</div>
+      <div class="sec-metric-lbl">Avg Wait Time</div>
+    </div>
+    <div class="sec-metric">
+      <div class="sec-metric-val" style="color:#aa88ff">34%</div>
+      <div class="sec-metric-lbl">Grid Dependency</div>
+    </div>
+    <div class="sec-metric">
+      <div class="sec-metric-val" style="color:var(--green)">98.7%</div>
+      <div class="sec-metric-lbl">Uptime Score</div>
+    </div>
+    <div class="sec-metric">
+      <div class="sec-metric-val" style="color:var(--red)">0</div>
+      <div class="sec-metric-lbl">Active Alerts</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== LIVE QUEUE MONITORING ===== -->
+<section id="queue">
+  <div class="section-header">
+    <div class="section-title">AI Queue Management System</div>
+    <span class="section-badge badge-ai">AI-POWERED</span>
+    <div class="section-line"></div>
+    <span class="section-badge badge-live">● LIVE</span>
+  </div>
+
+  <div class="queue-grid">
+    <!-- Motorcycle Lane -->
+    <div class="lane-card lane-green">
+      <div class="lane-header">
+        <div class="lane-title">🏍 Motorcycle Lane</div>
+        <div class="lane-status">
+          <div class="lane-dot"></div>
+          <span style="color:var(--green)">ACTIVE</span>
+        </div>
+      </div>
+      <div class="lane-queue" id="moto-queue">
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🏍</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">BDH-M-4421</div>
+            <div class="vehicle-status" style="color:var(--green)">Servicing</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~1m</span>
+        </div>
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🏍</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">DHK-M-7734</div>
+            <div class="vehicle-status" style="color:var(--text-dim)">Queue #2</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~4m</span>
+        </div>
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🏍</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">CTG-M-1109</div>
+            <div class="vehicle-status" style="color:var(--text-dim)">Queue #3</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~6m</span>
+        </div>
+      </div>
+      <div class="queue-timer">
+        <div class="timer-val" id="moto-timer">06:20</div>
+        <div class="timer-lbl">Estimated Wait</div>
+      </div>
+    </div>
+
+    <!-- Car Lane -->
+    <div class="lane-card lane-blue">
+      <div class="lane-header">
+        <div class="lane-title">🚗 Car Lane</div>
+        <div class="lane-status">
+          <div class="lane-dot"></div>
+          <span style="color:var(--blue)">ACTIVE</span>
+        </div>
+      </div>
+      <div class="lane-queue" id="car-queue">
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🚗</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">DHK-CA-3311</div>
+            <div class="vehicle-status" style="color:var(--blue)">Servicing</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~3m</span>
+        </div>
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🚙</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">MYM-CA-8801</div>
+            <div class="vehicle-status" style="color:var(--text-dim)">Queue #2</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~7m</span>
+        </div>
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🚗</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">SYL-CA-5543</div>
+            <div class="vehicle-status" style="color:var(--text-dim)">Queue #3</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~11m</span>
+        </div>
+      </div>
+      <div class="queue-timer">
+        <div class="timer-val" id="car-timer">11:45</div>
+        <div class="timer-lbl">Estimated Wait</div>
+      </div>
+    </div>
+
+    <!-- EV Fast-Charge Lane -->
+    <div class="lane-card lane-yellow">
+      <div class="lane-header">
+        <div class="lane-title">⚡ EV Fast-Charge</div>
+        <div class="lane-status">
+          <div class="lane-dot"></div>
+          <span style="color:var(--yellow)">BUSY</span>
+        </div>
+      </div>
+      <div class="lane-queue" id="ev-queue">
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🔋</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">DHK-EV-7722</div>
+            <div class="vehicle-status" style="color:var(--yellow)">Charging 84%</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~8m</span>
+        </div>
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🚘</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">CTG-EV-3309</div>
+            <div class="vehicle-status" style="color:var(--text-dim)">Queue #2</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~15m</span>
+        </div>
+      </div>
+      <div class="queue-timer">
+        <div class="timer-val" id="ev-timer">15:00</div>
+        <div class="timer-lbl">Estimated Wait</div>
+      </div>
+    </div>
+
+    <!-- Heavy Vehicle Lane -->
+    <div class="lane-card lane-red">
+      <div class="lane-header">
+        <div class="lane-title">🚛 Heavy Vehicle</div>
+        <div class="lane-status">
+          <div class="lane-dot"></div>
+          <span style="color:var(--red)">ACTIVE</span>
+        </div>
+      </div>
+      <div class="lane-queue" id="heavy-queue">
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🚛</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">DHK-TR-1190</div>
+            <div class="vehicle-status" style="color:var(--red)">Servicing</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~12m</span>
+        </div>
+        <div class="queue-vehicle">
+          <span class="vehicle-icon">🚌</span>
+          <div class="vehicle-info">
+            <div class="vehicle-id">RJH-BU-4456</div>
+            <div class="vehicle-status" style="color:var(--text-dim)">Queue #2</div>
+          </div>
+          <span style="font-size:11px;font-family:'Share Tech Mono';color:var(--text-dim)">~24m</span>
+        </div>
+      </div>
+      <div class="queue-timer">
+        <div class="timer-val" id="heavy-timer">24:00</div>
+        <div class="timer-lbl">Estimated Wait</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Prediction -->
+  <div class="ai-prediction">
+    <span class="ai-icon">🤖</span>
+    <div class="ai-text">
+      <strong>AI LANE BALANCING:</strong>
+      Predicting peak load at 17:30–19:00 based on historical data. Recommend opening Reserve Pump 2 at 17:15.
+      EV lane throughput optimized — redirecting 2 standard cars to Car Lane to reduce EV queue by ~6 min.
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== BOOKING SYSTEM ===== -->
+<section id="book-slot">
+  <div class="section-header">
+    <div class="section-title">Smart Slot Reservation System</div>
+    <span class="section-badge badge-smart">ONLINE BOOKING</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="booking-layout">
+    <!-- Form -->
+    <div class="form-card">
+      <div class="form-title">
+        📋 Reserve Your Queue Slot
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Vehicle Type</label>
+        <select class="form-select" id="vehicle-type">
+          <option value="">Select vehicle type...</option>
+          <option value="motorcycle">🏍 Motorcycle</option>
+          <option value="car">🚗 Car / SUV</option>
+          <option value="ev">⚡ Electric Vehicle</option>
+          <option value="heavy">🚛 Heavy Vehicle / Truck</option>
+          <option value="bus">🚌 Bus / Minibus</option>
+          <option value="cng">🛺 CNG / Auto-Rickshaw</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Fuel / Service Type</label>
+        <select class="form-select" id="fuel-type">
+          <option value="">Select service...</option>
+          <option value="octane">⛽ Octane (95)</option>
+          <option value="petrol">⛽ Petrol (87)</option>
+          <option value="diesel">🛢 Diesel</option>
+          <option value="ev-fast">⚡ EV Fast Charge (DC)</option>
+          <option value="ev-slow">🔌 EV Standard Charge (AC)</option>
+          <option value="cng-gas">💨 CNG Gas</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number (for SMS token)</label>
+        <input type="tel" class="form-input" id="phone-num" placeholder="+880 1X XXXX XXXX" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Time Slot</label>
+        <div class="time-slots">
+          <div class="time-slot" onclick="selectSlot(this)">09:00</div>
+          <div class="time-slot booked">09:30</div>
+          <div class="time-slot" onclick="selectSlot(this)">10:00</div>
+          <div class="time-slot" onclick="selectSlot(this)">10:30</div>
+          <div class="time-slot booked">11:00</div>
+          <div class="time-slot" onclick="selectSlot(this)">11:30</div>
+          <div class="time-slot" onclick="selectSlot(this)">14:00</div>
+          <div class="time-slot" onclick="selectSlot(this)">14:30</div>
+          <div class="time-slot booked">15:00</div>
+          <div class="time-slot" onclick="selectSlot(this)">15:30</div>
+          <div class="time-slot" onclick="selectSlot(this)">16:00</div>
+          <div class="time-slot booked">16:30</div>
+        </div>
+      </div>
+
+      <button class="btn-book" onclick="generateBooking()">⚡ RESERVE QUEUE SLOT</button>
+    </div>
+
+    <!-- Confirmation / QR -->
+    <div class="form-card" id="confirmation-area">
+      <div class="idle-placeholder" id="idle-state">
+        <div class="idle-icon">📲</div>
+        <div style="font-family:'Orbitron',sans-serif;font-size:13px;color:var(--text-dim)">Awaiting Reservation</div>
+        <div style="font-size:12px;color:var(--text-dim);max-width:220px">Fill the form and click Reserve Slot to generate your QR token</div>
+      </div>
+      <div class="confirmation-card" id="confirm-state" style="display:none">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--green);letter-spacing:2px">BOOKING CONFIRMED</div>
+        <canvas id="qr-canvas" class="qr-canvas" width="140" height="140"></canvas>
+        <div>
+          <div class="token-label">Queue Token</div>
+          <div class="token-display" id="token-num">—</div>
+        </div>
+        <div id="lane-badge" class="assigned-lane"></div>
+        <div style="font-size:12px;color:var(--text-dim);font-family:'Share Tech Mono',monospace" id="slot-time-display"></div>
+        <div style="font-size:11px;color:var(--text-dim)">SMS sent · Scan QR at pump terminal</div>
+        <button class="btn-book" style="padding:10px;font-size:11px" onclick="resetBooking()">↩ NEW BOOKING</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== RFID FUEL CARD ===== -->
+<section id="rfid">
+  <div class="section-header">
+    <div class="section-title">Smart RFID Fuel Card</div>
+    <span class="section-badge badge-smart">CASHLESS SYSTEM</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="rfid-layout">
+    <!-- Card Visual -->
+    <div>
+      <div class="fuel-card-wrapper">
+        <div class="fuel-card">
+          <div class="card-logo">⚡ SMART ENERGY CARD</div>
+          <div class="card-balance-badge">৳ 4,850</div>
+          <div class="card-chip"></div>
+          <div class="card-number">4821 •••• •••• 7734</div>
+          <div class="card-bottom">
+            <div>
+              <div class="card-name">MD. RAIYAN HOSSAIN</div>
+              <div class="card-expiry">EXP: 12/28 | VALID THRU</div>
+            </div>
+            <div class="card-rfid">📡</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+        <button class="btn-book" style="margin-top:0;padding:10px;font-size:11px">⬆️ TOP UP</button>
+        <button class="btn-book" style="margin-top:0;padding:10px;font-size:11px;border-color:rgba(255,170,0,0.4)">📊 STATEMENT</button>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="rfid-stats">
+      <div class="rfid-stat-card">
+        <div class="rfid-stat-val" style="color:var(--green)">৳ 4,850</div>
+        <div class="rfid-stat-lbl">Card Balance</div>
+        <div class="progress-bar-thin">
+          <div class="progress-bar-fill" style="width:65%;background:linear-gradient(90deg,var(--green),#00ff99)"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px">Max: ৳ 10,000</div>
+      </div>
+
+      <div class="rfid-stat-card">
+        <div class="rfid-stat-val" style="color:#f0c040">2,740</div>
+        <div class="rfid-stat-lbl">Reward Points</div>
+        <div class="progress-bar-thin">
+          <div class="progress-bar-fill" style="width:55%;background:linear-gradient(90deg,#f0c040,#ffee88)"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px">Next tier: 3,000 pts</div>
+      </div>
+
+      <div class="rfid-stat-card">
+        <div class="rfid-stat-val" style="color:var(--blue)">286 L</div>
+        <div class="rfid-stat-lbl">Fuel This Month</div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--text-dim)">
+          <span>Octane: 180L</span>
+          <span>Diesel: 106L</span>
+        </div>
+        <div class="progress-bar-thin" style="margin-top:8px">
+          <div class="progress-bar-fill" style="width:72%;background:linear-gradient(90deg,var(--blue),#55ccff)"></div>
+        </div>
+      </div>
+
+      <div class="rfid-stat-card">
+        <div class="rfid-stat-val" style="color:var(--yellow)">142 kWh</div>
+        <div class="rfid-stat-lbl">EV Charging Used</div>
+        <div class="progress-bar-thin">
+          <div class="progress-bar-fill" style="width:48%;background:linear-gradient(90deg,var(--yellow),#ffdd66)"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:6px">8 charging sessions</div>
+      </div>
+
+      <div class="rfid-stat-card" style="grid-column:1/-1">
+        <div class="rfid-stat-lbl" style="margin-bottom:12px">Recent Transactions</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:16px">⛽</span>
+              <div><div style="font-size:13px;font-weight:600">Octane Refill — 45L</div><div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono'">Today 09:14 · Pump #3</div></div>
+            </div>
+            <div style="font-family:'Orbitron',sans-serif;font-size:13px;color:var(--red)">- ৳ 540</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:16px">⚡</span>
+              <div><div style="font-size:13px;font-weight:600">EV Fast Charge — 38 kWh</div><div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono'">Yesterday 16:42 · EV Port #2</div></div>
+            </div>
+            <div style="font-family:'Orbitron',sans-serif;font-size:13px;color:var(--red)">- ৳ 380</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:16px">💳</span>
+              <div><div style="font-size:13px;font-weight:600">Balance Top-Up</div><div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono'">3 days ago · bKash Transfer</div></div>
+            </div>
+            <div style="font-family:'Orbitron',sans-serif;font-size:13px;color:var(--green)">+ ৳ 2,000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== ENERGY ANALYTICS ===== -->
+<section id="energy">
+  <div class="section-header">
+    <div class="section-title">Energy Analytics & Monitoring</div>
+    <span class="section-badge badge-ai">AI-OPTIMIZED</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="energy-layout">
+    <!-- Main Chart -->
+    <div>
+      <div class="chart-card" style="margin-bottom:16px">
+        <div class="chart-title">⚡ Energy Source Distribution — Last 24 Hours</div>
+        <div style="display:flex;gap:16px;margin-bottom:12px">
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)"><span style="width:10px;height:10px;border-radius:2px;background:#00e87a;display:inline-block"></span>Solar</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)"><span style="width:10px;height:10px;border-radius:2px;background:#8855ff;display:inline-block"></span>Battery</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)"><span style="width:10px;height:10px;border-radius:2px;background:#ff4466;display:inline-block"></span>Grid</span>
+        </div>
+        <div style="position:relative;height:200px">
+          <canvas id="energyChart" role="img" aria-label="Energy source distribution over 24 hours showing solar, battery, and grid contributions">Energy data loading...</canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">📊 Hourly Vehicle Throughput</div>
+        <div style="position:relative;height:160px">
+          <canvas id="throughputChart" role="img" aria-label="Hourly vehicle throughput chart">Throughput data loading...</canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="energy-sidebar">
+      <div class="energy-stat">
+        <div class="energy-icon" style="background:rgba(0,232,122,0.1)">☀️</div>
+        <div style="flex:1">
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--green)">89.4 kW</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase">Solar Output</div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" style="width:72%;background:var(--green)"></div></div>
+        </div>
+      </div>
+      <div class="energy-stat">
+        <div class="energy-icon" style="background:rgba(136,85,255,0.1)">🔋</div>
+        <div style="flex:1">
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#aa88ff">52.1 kW</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase">Battery Discharge</div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" style="width:42%;background:#8855ff"></div></div>
+        </div>
+      </div>
+      <div class="energy-stat">
+        <div class="energy-icon" style="background:rgba(255,34,68,0.1)">🏭</div>
+        <div style="flex:1">
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--red)">28.7 kW</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase">Grid Draw</div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" style="width:23%;background:var(--red)"></div></div>
+        </div>
+      </div>
+      <div class="energy-stat">
+        <div class="energy-icon" style="background:rgba(0,170,255,0.1)">⚡</div>
+        <div style="flex:1">
+          <div style="font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--blue)">170.2 kW</div>
+          <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase">Total Output</div>
+          <div class="progress-bar-thin"><div class="progress-bar-fill" style="width:85%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+
+      <!-- AI Recommendations -->
+      <div class="ai-rec-card">
+        <div class="ai-rec-title">🤖 AI ENERGY RECOMMENDATIONS</div>
+        <div class="ai-rec-item"><span class="ai-bullet">▶</span>Pre-charge batteries before 06:00 when grid tariff is lowest (off-peak).</div>
+        <div class="ai-rec-item"><span class="ai-bullet">▶</span>Panel output drops 18% predicted at 15:30 due to cloud coverage — switch 30% load to battery.</div>
+        <div class="ai-rec-item"><span class="ai-bullet">▶</span>Reduce EV Fast-Charge slots to 4 during peak grid hours (17:00–20:00).</div>
+        <div class="ai-rec-item"><span class="ai-bullet">▶</span>Solar surplus at noon — divert 22 kW to battery recharge cycle.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="energy-bottom">
+    <div class="energy-bottom-card">
+      <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:8px">Peak Hour Demand</div>
+      <div class="peak-bars" id="peak-bars"></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono';margin-top:4px">
+        <span>6AM</span><span>10AM</span><span>2PM</span><span>6PM</span><span>10PM</span>
+      </div>
+    </div>
+    <div class="energy-bottom-card">
+      <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:8px">CO₂ Saved Today</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:32px;font-weight:800;color:var(--green);text-shadow:0 0 20px rgba(0,232,122,0.4)">124 kg</div>
+      <div style="font-size:12px;color:var(--text-dim)">vs. full grid operation</div>
+      <div class="progress-bar-thin" style="margin-top:12px"><div class="progress-bar-fill" style="width:68%;background:var(--green)"></div></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Monthly: 3.2 tonnes saved</div>
+    </div>
+    <div class="energy-bottom-card">
+      <div style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:8px">Grid Independence</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:32px;font-weight:800;color:var(--yellow);text-shadow:0 0 20px rgba(255,170,0,0.4)">66%</div>
+      <div style="font-size:12px;color:var(--text-dim)">Self-powered today</div>
+      <div class="progress-bar-thin" style="margin-top:12px"><div class="progress-bar-fill" style="width:66%;background:var(--yellow)"></div></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Target: 80% by Q4 2026</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== SAFETY / ADMIN ===== -->
+<section id="safety">
+  <div class="section-header">
+    <div class="section-title">Safety & Security Monitoring</div>
+    <span class="section-badge badge-live">● ALL SYSTEMS NOMINAL</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="safety-grid">
+    <div class="safety-card">
+      <div class="safety-status">
+        <div class="safety-indicator" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+        <span style="color:var(--green)">Fire Suppression</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">All 12 zones armed • Foam system pressurized • Last test: 2 days ago</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green)">OPERATIONAL ✓</div>
+    </div>
+    <div class="safety-card">
+      <div class="safety-status">
+        <div class="safety-indicator" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+        <span style="color:var(--green)">Gas Leak Detection</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">8 sensors active • CNG zone PPM: 0.02 • Fuel vapor: nominal</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green)">NO LEAKS DETECTED ✓</div>
+    </div>
+    <div class="safety-card">
+      <div class="safety-status">
+        <div class="safety-indicator" style="background:var(--yellow);box-shadow:0 0 8px var(--yellow);animation:pulse 1s infinite"></div>
+        <span style="color:var(--yellow)">Emergency Shutdown</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">E-STOP system armed • Remote kill: ready • Circuit breakers: closed</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--yellow)">STANDBY MODE</div>
+    </div>
+    <div class="safety-card">
+      <div class="safety-status">
+        <div class="safety-indicator" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+        <span style="color:var(--green)">CCTV System</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">16/16 cameras live • NVR recording • Motion detection active</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green)">RECORDING ✓</div>
+    </div>
+    <div class="safety-card">
+      <div class="safety-status">
+        <div class="safety-indicator" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+        <span style="color:var(--green)">Access Control</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">RFID gates operational • 3 authorized staff on-site • No breaches</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green)">SECURED ✓</div>
+    </div>
+    <div class="safety-card">
+      <div class="safety-status">
+        <div class="safety-indicator" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+        <span style="color:var(--green)">Lightning Protection</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim)">SPD units active • Earthing resistance: 0.8Ω • Weather: Clear</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green)">PROTECTED ✓</div>
+    </div>
+  </div>
+
+  <!-- CCTV Feeds -->
+  <div style="margin-bottom:16px;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1px">📹 LIVE CCTV FEEDS</div>
+  <div class="cctv-grid">
+    <div class="cctv-feed">
+      <div class="cctv-scan"></div>
+      <div class="cctv-overlay">
+        <span class="cctv-label">CAM-01 · ENTRY GATE</span>
+        <div class="cctv-rec"></div>
+      </div>
+      <div class="cctv-content">🚗</div>
+    </div>
+    <div class="cctv-feed">
+      <div class="cctv-scan" style="animation-delay:1s"></div>
+      <div class="cctv-overlay">
+        <span class="cctv-label">CAM-04 · FUEL PUMPS</span>
+        <div class="cctv-rec"></div>
+      </div>
+      <div class="cctv-content">⛽</div>
+    </div>
+    <div class="cctv-feed">
+      <div class="cctv-scan" style="animation-delay:2s"></div>
+      <div class="cctv-overlay">
+        <span class="cctv-label">CAM-07 · EV BAYS</span>
+        <div class="cctv-rec"></div>
+      </div>
+      <div class="cctv-content">⚡</div>
+    </div>
+    <div class="cctv-feed">
+      <div class="cctv-scan" style="animation-delay:0.5s"></div>
+      <div class="cctv-overlay">
+        <span class="cctv-label">CAM-12 · SOLAR ARRAY</span>
+        <div class="cctv-rec"></div>
+      </div>
+      <div class="cctv-content">☀️</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<div class="section-divider"></div>
+<div style="max-width:1400px;margin:0 auto;padding:0 2rem;">
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <div class="nav-logo-icon"></div>
+          <div class="nav-logo-text" style="font-size:14px">
+            SMART ENERGY REFILLING
+            <span>Intelligent Infrastructure · Bangladesh</span>
+          </div>
+        </div>
+        <p>A next-generation hybrid energy refilling station integrating solar power, EV charging, AI queue management, and RFID cashless systems. Designed for smart city infrastructure in Bangladesh.</p>
+        <div style="margin-top:16px;display:flex;gap:10px">
+          <span style="padding:4px 10px;border-radius:4px;background:var(--green-dim);border:1px solid rgba(0,232,122,0.2);font-size:11px;color:var(--green);font-family:'Share Tech Mono'">ISO 9001</span>
+          <span style="padding:4px 10px;border-radius:4px;background:var(--blue-dim);border:1px solid rgba(0,170,255,0.2);font-size:11px;color:var(--blue);font-family:'Share Tech Mono'">BSTI CERT</span>
+          <span style="padding:4px 10px;border-radius:4px;background:rgba(136,85,255,0.1);border:1px solid rgba(136,85,255,0.2);font-size:11px;color:#aa88ff;font-family:'Share Tech Mono'">LEED GOLD</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="#">Live Dashboard</a></li>
+          <li><a href="#">Book a Slot</a></li>
+          <li><a href="#">Energy Reports</a></li>
+          <li><a href="#">RFID Card Portal</a></li>
+          <li><a href="#">Admin Login</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Services</div>
+        <ul class="footer-links">
+          <li><a href="#">Fuel Distribution</a></li>
+          <li><a href="#">EV Fast Charging</a></li>
+          <li><a href="#">CNG Dispensing</a></li>
+          <li><a href="#">Solar Monitoring</a></li>
+          <li><a href="#">Fleet Management</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <ul class="footer-links">
+          <li><a href="#">📍 Mohakhali, Dhaka</a></li>
+          <li><a href="#">📞 +880-2-XXXXXXX</a></li>
+          <li><a href="#">✉ info@smartenergy.bd</a></li>
+          <li><a href="#">🌐 smartenergy.com.bd</a></li>
+          <li><a href="#">🕒 24/7 Operations</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Smart Energy Refilling Station, Bangladesh. All rights reserved.</div>
+      <div class="footer-dev">
+        <span style="opacity:0.5">Engineered for innovation ·</span>
+        <span class="dev-tag">⚡ Developed by Shah MD Mustafizur Rahman</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+// === PARTICLES ===
+(function() {
+  const container = document.getElementById('particles');
+  const colors = ['rgba(0,232,122,', 'rgba(0,170,255,', 'rgba(255,170,0,'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 3 + 1;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${color}0.6)};
+      animation-duration:${Math.random()*20+15}s;
+      animation-delay:${Math.random()*20}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+// === NAV ACTIVE STATE ===
+document.querySelectorAll('.nav-tabs a').forEach(a => {
+  a.addEventListener('click', function(e) {
+    document.querySelectorAll('.nav-tabs a').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// === QUEUE TIMER COUNTDOWN ===
+function startTimer(id, totalSeconds) {
+  const el = document.getElementById(id);
+  let s = totalSeconds;
+  setInterval(() => {
+    if (s <= 0) s = totalSeconds;
+    s--;
+    const m = String(Math.floor(s / 60)).padStart(2, '0');
+    const sec = String(s % 60).padStart(2, '0');
+    el.textContent = m + ':' + sec;
+  }, 1000);
+}
+
+startTimer('moto-timer', 380);
+startTimer('car-timer', 705);
+startTimer('ev-timer', 900);
+startTimer('heavy-timer', 1440);
+
+// === BOOKING SYSTEM ===
+let selectedSlot = '';
+
+function selectSlot(el) {
+  if (el.classList.contains('booked')) return;
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSlot = el.textContent;
+}
+
+function generateBooking() {
+  const vt = document.getElementById('vehicle-type').value;
+  const ft = document.getElementById('fuel-type').value;
+  if (!vt || !ft || !selectedSlot) {
+    alert('Please fill all fields and select a time slot.');
+    return;
+  }
+
+  const token = 'SER-' + Math.floor(1000 + Math.random() * 9000);
+  const lanes = { motorcycle: { name: 'Motorcycle Lane', color: '#00e87a' }, car: { name: 'Car Lane', color: '#00aaff' }, ev: { name: 'EV Fast-Charge Lane', color: '#ffaa00' }, heavy: { name: 'Heavy Vehicle Lane', color: '#ff2244' }, bus: { name: 'Heavy Vehicle Lane', color: '#ff2244' }, cng: { name: 'Motorcycle Lane', color: '#00e87a' } };
+  const lane = lanes[vt] || lanes.car;
+
+  document.getElementById('token-num').textContent = token;
+  document.getElementById('slot-time-display').textContent = 'Slot: Today ' + selectedSlot + ' BDT';
+  const lb = document.getElementById('lane-badge');
+  lb.textContent = '🚦 ' + lane.name;
+  lb.style.cssText = `background:${lane.color}22;border:1px solid ${lane.color}66;color:${lane.color};padding:8px 20px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700`;
+
+  drawQR(token);
+
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('confirm-state').style.display = 'flex';
+}
+
+function resetBooking() {
+  document.getElementById('idle-state').style.display = 'flex';
+  document.getElementById('confirm-state').style.display = 'none';
+  document.getElementById('vehicle-type').value = '';
+  document.getElementById('fuel-type').value = '';
+  selectedSlot = '';
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+}
+
+function drawQR(data) {
+  const canvas = document.getElementById('qr-canvas');
+  const ctx = canvas.getContext('2d');
+  const size = 140;
+  const mod = 17;
+  const cell = Math.floor(size / mod);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, size, size);
+
+  const hash = data.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  ctx.fillStyle = '#000';
+
+  for (let r = 0; r < mod; r++) {
+    for (let c2 = 0; c2 < mod; c2++) {
+      const isFinderRow = (r < 3 && c2 < 3) || (r < 3 && c2 > mod - 4) || (r > mod - 4 && c2 < 3);
+      const val = isFinderRow ? 1 : ((hash * (r + 1) * (c2 + 1) + r * c2) % 3 === 0 ? 1 : 0);
+      if (val) ctx.fillRect(c2 * cell + 4, r * cell + 4, cell - 1, cell - 1);
+    }
+  }
+  // Finder pattern corners
+  [[0,0],[0,mod-3],[mod-3,0]].forEach(([dr, dc]) => {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(dc * cell + 4, dr * cell + 4, cell * 3 - 1, cell * 3 - 1);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(dc * cell + 5, dr * cell + 5, cell * 3 - 3, cell * 3 - 3);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(dc * cell + 7, dr * cell + 7, cell - 1, cell - 1);
+  });
+}
+
+// === PEAK BARS ===
+(function() {
+  const container = document.getElementById('peak-bars');
+  const values = [20, 45, 70, 60, 85, 95, 80, 75, 60, 90, 100, 65];
+  const colors = ['#8855ff','#8855ff','#00aaff','#00aaff','#00e87a','#00e87a','#00e87a','#ffaa00','#ffaa00','#ff2244','#ff2244','#8855ff'];
+  values.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'peak-bar';
+    bar.style.cssText = `height:${v}%;background:${colors[i]};opacity:0.7;animation-delay:${i * 0.05}s`;
+    container.appendChild(bar);
+  });
+})();
+
+// === CHARTS ===
+window.addEventListener('load', () => {
+  // Energy Distribution Chart
+  const eCtx = document.getElementById('energyChart').getContext('2d');
+  const hours = ['00','02','04','06','08','10','12','14','16','18','20','22'];
+  new Chart(eCtx, {
+    type: 'line',
+    data: {
+      labels: hours,
+      datasets: [
+        {
+          label: 'Solar',
+          data: [0,0,0,5,35,70,89,85,75,40,10,0],
+          borderColor: '#00e87a', backgroundColor: 'rgba(0,232,122,0.12)',
+          fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#00e87a'
+        },
+        {
+          label: 'Battery',
+          data: [60,55,50,45,30,20,18,20,30,50,65,70],
+          borderColor: '#8855ff', backgroundColor: 'rgba(136,85,255,0.08)',
+          fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#8855ff',
+          borderDash: [5,3]
+        },
+        {
+          label: 'Grid',
+          data: [40,45,50,50,35,10,5,8,15,40,55,60],
+          borderColor: '#ff4466', backgroundColor: 'rgba(255,68,102,0.06)',
+          fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#ff4466',
+          borderDash: [2,2]
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(0,180,255,0.05)' }, ticks: { color: 'rgba(180,210,255,0.4)', font: { size: 10, family: 'Share Tech Mono' } } },
+        y: { grid: { color: 'rgba(0,180,255,0.05)' }, ticks: { color: 'rgba(180,210,255,0.4)', font: { size: 10 } }, max: 120 }
+      }
+    }
+  });
+
+  // Throughput Chart
+  const tCtx = document.getElementById('throughputChart').getContext('2d');
+  new Chart(tCtx, {
+    type: 'bar',
+    data: {
+      labels: ['6AM','7AM','8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM','6PM','7PM','8PM'],
+      datasets: [{
+        label: 'Vehicles',
+        data: [8,22,35,28,20,18,25,30,22,28,40,55,62,45,30],
+        backgroundColor: (ctx) => {
+          const v = ctx.raw;
+          if (v > 50) return 'rgba(255,34,68,0.7)';
+          if (v > 35) return 'rgba(255,170,0,0.7)';
+          return 'rgba(0,170,255,0.7)';
+        },
+        borderRadius: 4, borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: 'rgba(180,210,255,0.4)', font: { size: 9, family: 'Share Tech Mono' }, maxRotation: 45, autoSkip: false } },
+        y: { grid: { color: 'rgba(0,180,255,0.05)' }, ticks: { color: 'rgba(180,210,255,0.4)', font: { size: 10 } } }
+      }
+    }
+  });
+});
+
+// === ANIMATED QUEUE SIMULATION ===
+const vehicleData = {
+  moto: ['🏍', '🛵'],
+  car: ['🚗', '🚙', '🚕'],
+  ev: ['🚘', '🔋'],
+  heavy: ['🚛', '🚌', '🚚']
+};
+
+const plateGen = () => {
+  const areas = ['DHK','CTG','SYL','RJH','MYM','BRI'];
+  const area = areas[Math.floor(Math.random() * areas.length)];
+  const num = Math.floor(1000 + Math.random() * 9000);
+  return area + '-' + num;
+};
+
+// Scroll-triggered animation for section headers
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('section').forEach(s => {
+  s.style.opacity = '0';
+  s.style.transform = 'translateY(30px)';
+  s.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(s);
+});
+</script>
+</body>
+</html>
