@@ -1892,6 +1892,21 @@ document.querySelectorAll('section').forEach(s => {
   s.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
   observer.observe(s);
 });
+const alerts = [
+  "⚡ EV Port #3 Available",
+  "☀ Solar Peak Efficiency Active",
+  "🚦 Traffic Surge Predicted at 6PM",
+  "🔋 Battery Backup Fully Charged",
+  "📡 RFID Transactions Stable",
+  "⚠ Heavy Vehicle Lane Congestion Rising"
+];
+
+let currentAlert = 0;
+
+setInterval(() => {
+  currentAlert = (currentAlert + 1) % alerts.length;
+  document.getElementById('live-alert').innerHTML = alerts[currentAlert];
+}, 4000);
 </script>
 </body>
 </html>
