@@ -34,7 +34,7 @@
   --nav-h: 70px;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); }
 
 body {
   background: var(--bg-deep);
@@ -846,27 +846,178 @@ footer {
 .ticker-item { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim); }
 .ticker-item span { margin: 0 4px; }
 
-/* === RESPONSIVE === */
-@media (max-width: 1100px) {
-  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-  .queue-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .rfid-layout { grid-template-columns: 1fr; }
-  .energy-layout { grid-template-columns: 1fr; }
+/* === HAMBURGER BUTTON === */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center;
+  gap: 5px; width: 36px; height: 36px; cursor: pointer;
+  background: none; border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px; flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.hamburger:hover { border-color: var(--blue); }
+.hamburger span {
+  display: block; width: 100%; height: 2px;
+  background: var(--text); border-radius: 2px;
+  transition: all 0.3s ease; transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* === MOBILE NAV DRAWER === */
+.mobile-nav {
+  display: none; position: fixed; top: var(--nav-h); left: 0; right: 0;
+  background: rgba(3, 9, 18, 0.98); backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  z-index: 999; padding: 16px;
+  transform: translateY(-10px); opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+.mobile-nav.open { transform: translateY(0); opacity: 1; pointer-events: all; }
+.mobile-nav ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.mobile-nav ul li a {
+  display: block; padding: 12px 16px; border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 600;
+  text-decoration: none; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+  transition: all 0.2s; border: 1px solid transparent;
+}
+.mobile-nav ul li a:hover { color: var(--blue); background: var(--blue-dim); border-color: rgba(0,170,255,0.2); }
+.mobile-nav-dev {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-dim);
+  text-align: center; letter-spacing: 1px;
+}
+.mobile-nav-dev span { color: var(--green); }
+
+/* === FLUID TYPOGRAPHY === */
+.hero-title h1 { font-size: clamp(18px, 4vw, 32px); }
+.hero-title p  { font-size: clamp(10px, 1.5vw, 14px); letter-spacing: clamp(1px, 0.4vw, 3px); }
+.section-title { font-size: clamp(14px, 2vw, 20px); }
+.metric-value  { font-size: clamp(24px, 3.5vw, 34px); }
+
+/* === BREAKPOINT 1 — Large Tablet (1200px) === */
+@media (max-width: 1200px) {
+  .metrics-grid      { grid-template-columns: repeat(2, 1fr); }
+  .queue-grid        { grid-template-columns: repeat(2, 1fr); }
   .secondary-metrics { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid       { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .energy-layout     { grid-template-columns: 1fr; }
+  .rfid-layout       { grid-template-columns: 1fr; }
+  .rfid-stats        { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* === BREAKPOINT 2 — Tablet (1024px) === */
+@media (max-width: 1024px) {
+  :root { --nav-h: 64px; }
+  nav { padding: 0 1.25rem; }
+  section { padding: 40px 1.25rem; }
+  .nav-tabs    { display: none; }
+  .hamburger   { display: flex; }
+  .mobile-nav  { display: block; }
+  .dev-credit  { display: none; }
+
+  .booking-layout  { grid-template-columns: 1fr; }
+  .safety-grid     { grid-template-columns: repeat(2, 1fr); }
+  .cctv-grid       { grid-template-columns: repeat(2, 1fr); }
+  .energy-bottom   { grid-template-columns: repeat(2, 1fr); }
+  .energy-sidebar  { display: grid; grid-template-columns: 1fr 1fr; }
+  .fuel-card-wrapper { max-width: 420px; margin: 0 auto; }
+  .rfid-stats      { grid-template-columns: repeat(2, 1fr); }
+  .time-slots      { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid     { grid-template-columns: 1fr 1fr; }
+}
+
+/* === BREAKPOINT 3 — Mobile (768px) === */
 @media (max-width: 768px) {
-  .nav-tabs { display: none; }
-  .metrics-grid { grid-template-columns: 1fr 1fr; }
-  .queue-grid { grid-template-columns: 1fr; }
-  .booking-layout { grid-template-columns: 1fr; }
-  .safety-grid { grid-template-columns: 1fr; }
-  .cctv-grid { grid-template-columns: repeat(2, 1fr); }
-  .energy-bottom { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
+  :root { --nav-h: 60px; }
+  nav { padding: 0 1rem; }
+  section { padding: 32px 1rem; }
+  .ticker-wrapper { padding: 10px 1rem 0; }
+
+  .nav-logo-text   { display: none; }
+  .metrics-grid    { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .metric-card     { padding: 16px; }
+  .queue-grid      { grid-template-columns: 1fr; gap: 12px; }
+  .secondary-metrics { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .safety-grid     { grid-template-columns: 1fr; }
+  .cctv-grid       { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .energy-bottom   { grid-template-columns: 1fr; }
+  .energy-sidebar  { grid-template-columns: 1fr; }
+  .footer-grid     { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom   { flex-direction: column; gap: 10px; text-align: center; }
+  .rfid-stats      { grid-template-columns: 1fr 1fr; }
+  .rfid-layout     { grid-template-columns: 1fr; }
+  .fuel-card-wrapper { max-width: 100%; }
+
+  .live-ticker     { padding: 8px 12px; }
+  .ticker-label    { font-size: 9px; }
+  .section-header  { flex-wrap: wrap; gap: 8px; }
+  .section-line    { display: none; }
+  .section-badge   { font-size: 9px; padding: 3px 8px; }
+  .time-slots      { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .time-slot       { font-size: 11px; padding: 7px 4px; }
+  .hero-title      { margin-bottom: 28px; }
+  .ai-prediction   { flex-direction: column; gap: 8px; font-size: 12px; }
+  .idle-placeholder { min-height: 200px; }
+  .form-title      { font-size: 14px; }
+  .footer-dev      { flex-direction: column; gap: 6px; align-items: center; }
+}
+
+/* === BREAKPOINT 4 — Small Phone (480px) === */
+@media (max-width: 480px) {
+  section { padding: 24px 0.75rem; }
+  .ticker-wrapper { padding: 8px 0.75rem 0; }
+
+  .metrics-grid    { grid-template-columns: 1fr; }
+  .metric-card     { padding: 14px; display: flex; align-items: center; gap: 14px; }
+  .metric-icon     { font-size: 22px; margin-bottom: 0; flex-shrink: 0; }
+  .metric-bar      { display: none; }
+  .metric-sub      { font-size: 11px; }
+
   .secondary-metrics { grid-template-columns: repeat(2, 1fr); }
-  .hero-title h1 { font-size: 22px; }
+  .sec-metric      { padding: 10px 6px; }
+  .sec-metric-val  { font-size: 15px; }
+  .sec-metric-lbl  { font-size: 8px; letter-spacing: 0.5px; }
+
+  .cctv-grid       { grid-template-columns: 1fr 1fr; }
+  .rfid-stats      { grid-template-columns: 1fr; }
+  .time-slots      { grid-template-columns: repeat(2, 1fr); }
+  .energy-bottom   { grid-template-columns: 1fr; }
+  .safety-grid     { grid-template-columns: 1fr; }
+  .energy-sidebar  { grid-template-columns: 1fr; }
+  .form-card       { padding: 16px; }
+  .chart-card      { padding: 14px; }
+  .hero-title p    { display: none; }
+  .token-display   { font-size: 26px; }
+  .lane-queue      { min-height: 80px; }
+  .footer-brand p  { font-size: 12px; }
+  .ai-rec-item     { font-size: 11px; }
+  .card-number     { font-size: 12px; letter-spacing: 2px; }
+  .queue-vehicle   { padding: 6px 8px; font-size: 12px; }
+}
+
+/* === LANDSCAPE PHONE === */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root { --nav-h: 52px; }
+  #live-status     { padding-top: 16px; }
+  .hero-title      { margin-bottom: 16px; }
+  .hero-title p    { display: none; }
+  section          { padding: 20px 1rem; }
+  .metrics-grid    { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .metric-card     { padding: 12px; }
+  .queue-grid      { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* === TOUCH DEVICE IMPROVEMENTS === */
+@media (hover: none) and (pointer: coarse) {
+  .metric-card:hover  { transform: none; }
+  .btn-book:hover     { transform: none; }
+  .fuel-card:hover    { transform: none; }
+  .time-slot          { padding: 10px 4px; }
+  .form-select,
+  .form-input         { font-size: 16px; }
 }
 
 /* === GLITCH ANIMATION === */
@@ -889,6 +1040,9 @@ footer {
   90% { opacity: 0.3; }
   to { transform: translateY(-10vh) scale(1); opacity: 0; }
 }
+
+/* === TICKER WRAPPER === */
+.ticker-wrapper { padding: 12px 2rem 0; max-width: 1400px; margin: 0 auto; }
 
 /* Number counter animation */
 .counter { display: inline-block; }
@@ -922,14 +1076,29 @@ footer {
   <div class="nav-right">
     <div class="dev-credit">Dev: <span>Shah MD Mustafizur Rahman</span></div>
     <div class="status-dot" title="All Systems Online"></div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav" id="mobile-nav">
+  <ul>
+    <li><a href="#live-status" onclick="closeMobileNav()">&#9889; Live Status</a></li>
+    <li><a href="#book-slot" onclick="closeMobileNav()">&#128203; Book Slot</a></li>
+    <li><a href="#energy" onclick="closeMobileNav()">&#128202; Energy Analytics</a></li>
+    <li><a href="#rfid" onclick="closeMobileNav()">&#128179; Fuel Card</a></li>
+    <li><a href="#safety" onclick="closeMobileNav()">&#128737; Admin Dashboard</a></li>
+  </ul>
+  <div class="mobile-nav-dev">&#9889; Developed by <span>Shah MD Mustafizur Rahman</span></div>
+</div>
 
 <!-- MAIN CONTENT -->
 <main>
 
 <!-- LIVE TICKER -->
-<div style="padding: 12px 2rem 0; max-width: 1400px; margin: var(--nav-h) auto 0;">
+<div style="padding: 12px 2rem 0; max-width: 1400px; margin: var(--nav-h) auto 0;" class="ticker-wrapper">
   <div class="live-ticker">
     <div class="ticker-label">◉ LIVE FEED</div>
     <div style="overflow: hidden; flex: 1;">
@@ -1678,11 +1847,48 @@ footer {
   }
 })();
 
+// === HAMBURGER MENU ===
+const hamburgerBtn = document.getElementById('hamburger');
+const mobileNavEl  = document.getElementById('mobile-nav');
+
+function openMobileNav() {
+  hamburgerBtn.classList.add('open');
+  mobileNavEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMobileNav() {
+  hamburgerBtn.classList.remove('open');
+  mobileNavEl.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+hamburgerBtn.addEventListener('click', () => {
+  if (hamburgerBtn.classList.contains('open')) { closeMobileNav(); }
+  else { openMobileNav(); }
+});
+
+// Close drawer when clicking outside
+document.addEventListener('click', (e) => {
+  if (mobileNavEl.classList.contains('open') &&
+      !mobileNavEl.contains(e.target) &&
+      !hamburgerBtn.contains(e.target)) {
+    closeMobileNav();
+  }
+});
+
+// Close drawer on ESC key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeMobileNav();
+});
+
 // === NAV ACTIVE STATE ===
-document.querySelectorAll('.nav-tabs a').forEach(a => {
-  a.addEventListener('click', function(e) {
+document.querySelectorAll('.nav-tabs a, .mobile-nav a').forEach(a => {
+  a.addEventListener('click', function() {
     document.querySelectorAll('.nav-tabs a').forEach(x => x.classList.remove('active'));
-    this.classList.add('active');
+    const href = this.getAttribute('href');
+    const matching = document.querySelector(`.nav-tabs a[href="${href}"]`);
+    if (matching) matching.classList.add('active');
   });
 });
 
